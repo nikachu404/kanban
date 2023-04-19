@@ -1,30 +1,61 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Issue } from './types/Issue';
-import { useState, useEffect } from 'react';
-import { Col, Container, Row } from 'react-bootstrap';
+import { Col, Container, Row, Button, Form, Alert } from 'react-bootstrap';
 import { fetchIssues } from './api/fetchIssues';
 
-import './App.css';
+import './App.scss';
+
+const getIssuesLink = (githubLink: string) => {
+  const parts = githubLink.split('/');
+  const username = parts[3];
+  const repository = parts[4];
+  const issuesLink = `https://api.github.com/repos/${username}/${repository}/issues`;
+  return issuesLink;
+};
 
 export const App: React.FC = () => {
-  const repoUrl = 'https://api.github.com/repos/facebook/react/issues';
-
+  const [repoUrl, setRepoUrl] = useState('');
   const [data, setData] = useState<Issue[]>([]);
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    fetchIssues(repoUrl)
-      .then((data) => setData(data))
-      .catch((error) => console.error(error));
-  }, []);
+  const todoIssues = data ? data.filter((issue) => issue.state === 'open') : [];
+  const inProgressIssues = data ? data.filter((issue) => issue.state === 'open' && issue.assignee) : [];
+  const doneIssues = data ? data.filter((issue) => issue.state === 'closed') : [];
 
-  const todoIssues = data.filter((issue) => issue.state === 'open');
-  const inProgressIssues = data.filter((issue) => issue.state === 'open' && issue.assignee);
-  const doneIssues = data.filter((issue) => issue.state === 'closed');
+  const handleLoadIssues = async () => {
+    const normalizedRepoUrl = getIssuesLink(repoUrl);
+  
+    if (normalizedRepoUrl) {
+      try {
+        const issues = await fetchIssues(normalizedRepoUrl);
+        if (!Array.isArray(issues)) {
+          throw new Error;
+        }
+        setData(issues);
+        setError('');
+
+        console.log(normalizedRepoUrl);
+      } catch (error) {
+        setError('Error loading issues. Please check your repository URL.');
+      }
+    }
+  };
 
   return (
     <div className="App">
       <Container>
-        <Row>
+        <Form.Group as={Row}>
+          <Col sm={10}>
+            <Form.Control type="text" placeholder="Enter repo URL" value={repoUrl} onChange={(e) => setRepoUrl(e.target.value)} />
+          </Col>
+          <Col sm={2}>
+            <Button variant="primary" onClick={handleLoadIssues}>Load Issues</Button>
+          </Col>
+        </Form.Group>
+
+        {error && <Alert variant="danger">{error}</Alert>}
+
+        <Row className="mt-3">
           <Col>
             <h3>ToDo</h3>
             {todoIssues.map((item) => (
@@ -46,7 +77,7 @@ export const App: React.FC = () => {
             ))}
           </Col>
         </Row>
-      </Container >
+      </Container>
     </div>
   );
 };
