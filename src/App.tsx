@@ -24,7 +24,7 @@ export const App: React.FC = () => {
 
   const handleLoadIssues = async () => {
     const normalizedRepoUrl = getIssuesLink(repoUrl);
-  
+
     if (normalizedRepoUrl) {
       try {
         const issues = await fetchIssues(normalizedRepoUrl);
@@ -36,6 +36,7 @@ export const App: React.FC = () => {
 
         console.log(normalizedRepoUrl);
       } catch (error) {
+        setRepoUrl('');
         setError('Error loading issues. Please check your repository URL.');
       }
     }
@@ -44,12 +45,12 @@ export const App: React.FC = () => {
   return (
     <div className="App">
       <Container>
-        <Form.Group as={Row}>
-          <Col sm={10}>
+        <Form.Group as={Row} className="justify-content-between">
+          <Col sm={8} md={8} lg={10}>
             <Form.Control type="text" placeholder="Enter repo URL" value={repoUrl} onChange={(e) => setRepoUrl(e.target.value)} />
           </Col>
-          <Col sm={2}>
-            <Button variant="primary" onClick={handleLoadIssues}>Load Issues</Button>
+          <Col xs={6} sm={4} md={4} lg={2}>
+            <Button variant="primary" onClick={handleLoadIssues} className="w-100">Load Issues</Button>
           </Col>
         </Form.Group>
 
@@ -57,24 +58,52 @@ export const App: React.FC = () => {
 
         <Row className="mt-3">
           <Col>
-            <h3>ToDo</h3>
-            {todoIssues.map((item) => (
-              <p key={item.id}>{item.title}</p>
-            ))}
+            <h1 className="text-center">ToDo</h1>
+            <div className="column mx-3">
+              {todoIssues.map((item) => (
+                <div className='issue my-3 align-left' key={item.id}>
+                  <div className="title">{item.title}</div>
+
+                  <div>
+                    {`#${item.number} opened ${Math.floor((new Date().getTime() - new Date(item.created_at).getTime()) / (1000 * 60 * 60 * 24))} days ago`}
+                  </div>
+
+                  <div>
+                    {`#${item.user.login} | Comments: ${item.comments}`}
+                  </div>
+                </div>
+              ))}
+            </div>
           </Col>
 
           <Col>
-            <h3>In Progress</h3>
-            {inProgressIssues.map((item) => (
-              <p key={item.id}>{item.title}</p>
-            ))}
+            <h1 className="text-center">In Progress</h1>
+            <div className="column mx-3">
+              {inProgressIssues.map((item) => (
+                <div className='issue my-3 align-left' key={item.id}>
+                  <div className="title">{item.title}</div>
+
+                  <div>
+                    {`#${item.number} opened ${Math.floor((new Date().getTime() - new Date(item.created_at).getTime()) / (1000 * 60 * 60 * 24))} days ago`}
+                  </div>
+                </div>
+              ))}
+            </div>
           </Col>
 
           <Col>
-            <h3>Done</h3>
-            {doneIssues.map((item) => (
-              <p key={item.id}>{item.title}</p>
-            ))}
+            <h1 className="text-center">Done</h1>
+            <div className="column mx-3">
+              {doneIssues.map((item) => (
+                <div className='issue my-3 align-left' key={item.id}>
+                  <div className="title">{item.title}</div>
+
+                  <div>
+                    {`#${item.number} opened ${Math.floor((new Date().getTime() - new Date(item.created_at).getTime()) / (1000 * 60 * 60 * 24))} days ago`}
+                  </div>
+                </div>
+              ))}
+            </div>
           </Col>
         </Row>
       </Container>

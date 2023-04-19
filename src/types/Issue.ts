@@ -1,11 +1,15 @@
 export interface Issue {
   id: number;
+  number: number;
   title: string;
   state: 'open' | 'closed';
-  assignee: Assignee | null;
+  user: User;
+  assignee: User | null;
+  created_at: Date;
+  comments: number;
 }
 
-interface Assignee {
+interface User {
   login: string;
   id: number;
   node_id: string;
