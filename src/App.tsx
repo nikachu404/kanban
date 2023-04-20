@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Issue } from './types/Issue';
 import { Col, Container, Row, Button, Form, Alert } from 'react-bootstrap';
-import { fetchIssues } from './api/fetchIssues';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
 import './App.scss';
+
+import { useAppDispatch } from './redux/hooks';
+import { fetchIssues } from './redux/slices/Issues';
 
 const getIssuesLink = (githubLink: string) => {
   const parts = githubLink.split('/');
@@ -17,6 +19,8 @@ const getIssuesLink = (githubLink: string) => {
 export const App: React.FC = () => {
   const [repoUrl, setRepoUrl] = useState('');
   const [error, setError] = useState('');
+
+  const dispatch = useAppDispatch();
 
   type Column = {
     id: string;
@@ -32,13 +36,17 @@ export const App: React.FC = () => {
 
   const handleLoadIssues = async () => {
     const normalizedRepoUrl = getIssuesLink(repoUrl);
+    console.log(normalizedRepoUrl);
 
     if (normalizedRepoUrl) {
       try {
-        const issues = await fetchIssues(normalizedRepoUrl);
+        const action = await dispatch(fetchIssues(normalizedRepoUrl));
+        const issues = action.payload;
+
         if (!Array.isArray(issues)) {
           throw new Error();
         }
+
         setError('');
         const todoIssues = issues.filter((issue) => issue.state === 'open');
         const inProgressIssues = issues.filter((issue) => issue.state === 'open' && issue.assignee);
@@ -66,16 +74,27 @@ export const App: React.FC = () => {
     destinationColumn && destinationColumn.items.splice(destination.index, 0, item);
     setBoardsState([...boardsState]);
   };
-  
+
   return (
     <div className="App">
       <Container>
         <Form.Group as={Row} className="justify-content-between">
           <Col sm={8} md={8} lg={10}>
-            <Form.Control type="text" placeholder="Enter repo URL" value={repoUrl} onChange={(e) => setRepoUrl(e.target.value)} />
+            <Form.Control
+              type="text"
+              placeholder="Enter repo URL"
+              value={repoUrl}
+              className='input'
+              onChange={(e) => setRepoUrl(e.target.value)}
+            />
           </Col>
           <Col xs={6} sm={4} md={4} lg={2}>
-            <Button variant="primary" onClick={handleLoadIssues} className="w-100">Load Issues</Button>
+            <Button
+              variant="secondary"
+              onClick={handleLoadIssues}
+              className="w-100 button">
+              Load Issues
+            </Button>
           </Col>
         </Form.Group>
 
@@ -90,7 +109,7 @@ export const App: React.FC = () => {
                     <Col {...provided.droppableProps} ref={provided.innerRef}>
                       <h1 className="text-center">{column.title}</h1>
                       <div className="column mx-3">
-                        {column.items.length && column.items.map((item, index) => (
+                        {column.items.map((item, index) => (
                           <Draggable draggableId={item.id.toString()} index={index} key={item.id}>
                             {(provided) => (
                               <div
