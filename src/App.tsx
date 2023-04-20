@@ -16,6 +16,12 @@ const getIssuesLink = (githubLink: string) => {
   return issuesLink;
 };
 
+export type Column = {
+  id: string;
+  title: string;
+  items: Issue[];
+}
+
 export const App: React.FC = () => {
   const [repoUrl, setRepoUrl] = useState('');
   const [error, setError] = useState('');
@@ -38,8 +44,11 @@ export const App: React.FC = () => {
     const normalizedRepoUrl = getIssuesLink(repoUrl);
     console.log(normalizedRepoUrl);
 
-    if (normalizedRepoUrl) {
-      try {
+    try {
+      const storedState = localStorage.getItem(repoUrl);
+      if (storedState) {
+        setBoardsState(JSON.parse(storedState));
+      } else {
         const action = await dispatch(fetchIssues(normalizedRepoUrl));
         const issues = action.payload;
 
@@ -54,12 +63,14 @@ export const App: React.FC = () => {
         setBoardsState([
           { id: 'todo', title: 'To Do', items: todoIssues },
           { id: 'in-progress', title: 'In Progress', items: inProgressIssues },
-          { id: 'done', title: 'Done', items: doneIssues }
+          { id: 'done', title: 'Done', items: doneIssues },
         ]);
-      } catch (error) {
-        setRepoUrl('');
-        setError('Error loading issues. Please check your repository URL.');
+
+        localStorage.setItem(repoUrl, JSON.stringify(boardsState));
       }
+    } catch (error) {
+      setRepoUrl('');
+      setError('Error loading issues. Please check your repository URL.');
     }
   };
 
@@ -73,6 +84,8 @@ export const App: React.FC = () => {
     sourceColumn.items.splice(source.index, 1);
     destinationColumn && destinationColumn.items.splice(destination.index, 0, item);
     setBoardsState([...boardsState]);
+
+    localStorage.setItem(repoUrl, JSON.stringify(boardsState));
   };
 
   return (
