@@ -33,4 +33,4 @@ const issuesSlice = createSlice({
   },
 });
 
-export default issuesSlice.reducer;
+export const issuesReducer = issuesSlice.reducer;

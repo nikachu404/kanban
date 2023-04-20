@@ -2,19 +2,20 @@ import React, { useState } from 'react';
 import { Col, Container, Row, Button, Form, Alert } from 'react-bootstrap';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
-import { fetchIssues } from './redux/slices/Issues';
-import { selectColumns } from './redux/slices/Columns';
+import { fetchIssues } from './redux/slices/IssuesSlice';
+import { selectColumns } from './redux/slices/columnsSlice';
 import { getIssuesApiLink } from './helpers/getIssuesApiLink';
 
 import './App.scss';
 import { Issue } from './types/Issue';
+import { clearRepoUrl, setRepoUrl } from './redux/slices/repoUrlSlice';
 
 export const App: React.FC = () => {
-  const [repoUrl, setRepoUrl] = useState('');
   const [error, setError] = useState('');
 
   const dispatch = useAppDispatch();
   const columns = useAppSelector(selectColumns);
+  const repoUrl = useAppSelector(state => state.repoUrl);
 
   const filterIssues = (issues: Issue[]) => {
     const todoIssues = issues.filter((issue) => issue.state === 'open');
@@ -63,7 +64,7 @@ export const App: React.FC = () => {
         { id: 'done', title: 'Done', items: doneIssues },
       ]));
     } catch (error) {
-      setRepoUrl('');
+      dispatch(clearRepoUrl());
       setError('Error loading issues. Please check your repository URL.');
     }
   };
@@ -98,7 +99,7 @@ export const App: React.FC = () => {
               placeholder="Enter repo URL"
               value={repoUrl}
               className='input'
-              onChange={(e) => setRepoUrl(e.target.value)}
+              onChange={(e) => dispatch(setRepoUrl(e.target.value))}
             />
           </Col>
           <Col xs={6} sm={4} md={4} lg={2}>
@@ -157,3 +158,4 @@ export const App: React.FC = () => {
     </div>
   );
 };
+

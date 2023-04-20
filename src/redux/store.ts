@@ -9,20 +9,21 @@ import {
   PURGE,
   REGISTER,
 } from 'redux-persist';
-import issuesReducer from './slices/Issues';
+import { issuesReducer } from './slices/IssuesSlice';
+import { columnsReducer } from './slices/columnsSlice';
+import { repoUrlSliceReducer } from './slices/repoUrlSlice';
 import storage from 'redux-persist/lib/storage';
-import { columnsReducer } from './slices/Columns';
-
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['columns'],
+  whitelist: ['columns', 'repoUrl'],
 };
 
 const rootReducer = combineReducers({
   issues: issuesReducer,
   columns: columnsReducer,
+  repoUrl: repoUrlSliceReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
