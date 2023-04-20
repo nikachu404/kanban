@@ -1,5 +1,14 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { persistReducer, persistStore } from 'redux-persist';
+import {
+  persistReducer,
+  persistStore,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist';
 import issuesReducer from './slices/Issues';
 import storage from 'redux-persist/lib/storage';
 import { columnsReducer } from './slices/Columns';
@@ -8,7 +17,7 @@ import { columnsReducer } from './slices/Columns';
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['issues'], // імена збережуваних reducers
+  whitelist: ['columns'],
 };
 
 const rootReducer = combineReducers({
@@ -20,6 +29,12 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
   reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
 });
 
 export const persistor = persistStore(store);
