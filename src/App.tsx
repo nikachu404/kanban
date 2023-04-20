@@ -1,73 +1,67 @@
 import React, { useState } from 'react';
-import { Issue } from './types/Issue';
 import { Col, Container, Row, Button, Form, Alert } from 'react-bootstrap';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { useAppDispatch, useAppSelector } from './redux/hooks';
+import { fetchIssues } from './redux/slices/Issues';
+import { selectColumns } from './redux/slices/Columns';
+import { getIssuesApiLink } from './helpers/getIssuesApiLink';
 
 import './App.scss';
-
-import { useAppDispatch } from './redux/hooks';
-import { fetchIssues } from './redux/slices/Issues';
-
-const getIssuesLink = (githubLink: string) => {
-  const parts = githubLink.split('/');
-  const username = parts[3];
-  const repository = parts[4];
-  const issuesLink = `https://api.github.com/repos/${username}/${repository}/issues`;
-  return issuesLink;
-};
-
-export type Column = {
-  id: string;
-  title: string;
-  items: Issue[];
-}
+import { Issue } from './types/Issue';
 
 export const App: React.FC = () => {
   const [repoUrl, setRepoUrl] = useState('');
   const [error, setError] = useState('');
 
   const dispatch = useAppDispatch();
+  const columns = useAppSelector(selectColumns);
 
-  type Column = {
-    id: string;
-    title: string;
-    items: Issue[];
-  }
+  const filterIssues = (issues: Issue[]) => {
+    const todoIssues = issues.filter((issue) => issue.state === 'open');
+    const inProgressIssues = issues.filter((issue) => issue.state === 'open' && issue.assignee);
+    const doneIssues = issues.filter((issue) => issue.state === 'closed');
 
-  const [boardsState, setBoardsState] = useState<Column[]>([
-    { id: 'todo', title: 'To Do', items: [] },
-    { id: 'in-progress', title: 'In Progress', items: [] },
-    { id: 'done', title: 'Done', items: [] }
-  ]);
+    return { todoIssues, inProgressIssues, doneIssues };
+  };
 
   const handleLoadIssues = async () => {
-    const normalizedRepoUrl = getIssuesLink(repoUrl);
-    console.log(normalizedRepoUrl);
+    const normalizedRepoUrl = getIssuesApiLink(repoUrl);
+
+    const storedState = localStorage.getItem(repoUrl);
+    if (storedState) {
+      const columnsFromStorage = JSON.parse(storedState);
+
+      dispatch({
+        type: 'columns/setColumns',
+        payload: columnsFromStorage,
+      });
+      return;
+    }
 
     try {
-      const storedState = localStorage.getItem(repoUrl);
-      if (storedState) {
-        setBoardsState(JSON.parse(storedState));
-      } else {
-        const action = await dispatch(fetchIssues(normalizedRepoUrl));
-        const issues = action.payload;
+      const action = await dispatch(fetchIssues(normalizedRepoUrl));
+      const issues = action.payload;
 
-        if (!Array.isArray(issues)) {
-          throw new Error();
-        }
+      if (!Array.isArray(issues)) {
+        throw new Error();
+      }
 
-        setError('');
-        const todoIssues = issues.filter((issue) => issue.state === 'open');
-        const inProgressIssues = issues.filter((issue) => issue.state === 'open' && issue.assignee);
-        const doneIssues = issues.filter((issue) => issue.state === 'closed');
-        setBoardsState([
+      setError('');
+      const { todoIssues, inProgressIssues, doneIssues } = filterIssues(issues);
+      dispatch({
+        type: 'columns/setColumns',
+        payload: [
           { id: 'todo', title: 'To Do', items: todoIssues },
           { id: 'in-progress', title: 'In Progress', items: inProgressIssues },
           { id: 'done', title: 'Done', items: doneIssues },
-        ]);
+        ]
+      });
 
-        localStorage.setItem(repoUrl, JSON.stringify(boardsState));
-      }
+      localStorage.setItem(repoUrl, JSON.stringify([
+        { id: 'todo', title: 'To Do', items: todoIssues },
+        { id: 'in-progress', title: 'In Progress', items: inProgressIssues },
+        { id: 'done', title: 'Done', items: doneIssues },
+      ]));
     } catch (error) {
       setRepoUrl('');
       setError('Error loading issues. Please check your repository URL.');
@@ -76,17 +70,23 @@ export const App: React.FC = () => {
 
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
+
+    const newColumns = columns.map(column => {
+      return { ...column, items: [...column.items] };
+    });
     const { source, destination } = result;
-    const sourceColumn = boardsState.find((column) => column.id === source.droppableId);
-    const destinationColumn = boardsState.find((column) => column.id === destination.droppableId);
+    console.log(destination.droppableId);
+    const sourceColumn = newColumns.find((column) => column.id === source.droppableId);
+    const destinationColumn = newColumns.find((column) => column.id === destination.droppableId);
     const item = sourceColumn && sourceColumn.items.find((item) => item.id === +result.draggableId);
     if (!item) return;
     sourceColumn.items.splice(source.index, 1);
     destinationColumn && destinationColumn.items.splice(destination.index, 0, item);
-    setBoardsState([...boardsState]);
+    dispatch({ type: 'columns/setColumns', payload: newColumns });
 
-    localStorage.setItem(repoUrl, JSON.stringify(boardsState));
+    localStorage.setItem(repoUrl, JSON.stringify(newColumns));
   };
+
 
   return (
     <div className="App">
@@ -113,10 +113,12 @@ export const App: React.FC = () => {
 
         {error && <Alert variant="danger">{error}</Alert>}
 
-        <DragDropContext onDragEnd={handleDragEnd}>
+        <DragDropContext
+          onDragEnd={handleDragEnd}
+        >
           <Row className="mt-3">
             {
-              boardsState.map(column => (
+              columns.map(column => (
                 <Droppable droppableId={column.id} key={column.id}>
                   {(provided) => (
                     <Col {...provided.droppableProps} ref={provided.innerRef}>
