@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
-import { Col, Container, Row, Button, Form, Alert } from 'react-bootstrap';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { Col, Container, Row, Button, Form, Alert } from 'react-bootstrap';
+import { clearRepoUrl, setRepoUrl } from './redux/slices/repoUrlSlice';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
 import { fetchIssues } from './redux/slices/IssuesSlice';
 import { selectColumns } from './redux/slices/columnsSlice';
 import { getIssuesApiLink } from './helpers/getIssuesApiLink';
+import { Issue } from './types/Issue';
+import { Column } from './types/Column';
 
 import './App.scss';
-import { Issue } from './types/Issue';
-import { clearRepoUrl, setRepoUrl } from './redux/slices/repoUrlSlice';
 
 export const App: React.FC = () => {
   const [error, setError] = useState('');
 
   const dispatch = useAppDispatch();
-  const columns = useAppSelector(selectColumns);
+  const columns: Column[] = useAppSelector(selectColumns);
   const repoUrl = useAppSelector(state => state.repoUrl);
 
   const filterIssues = (issues: Issue[]) => {
@@ -88,7 +89,6 @@ export const App: React.FC = () => {
     localStorage.setItem(repoUrl, JSON.stringify(newColumns));
   };
 
-
   return (
     <div className="App">
       <Container>
@@ -129,6 +129,7 @@ export const App: React.FC = () => {
                           <Draggable draggableId={item.id.toString()} index={index} key={item.id}>
                             {(provided) => (
                               <div
+                                draggable={true}
                                 className="issue my-3 align-left"
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
@@ -158,4 +159,3 @@ export const App: React.FC = () => {
     </div>
   );
 };
-
