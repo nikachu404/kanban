@@ -8,9 +8,9 @@ interface ColumnsState {
 
 const initialState: ColumnsState = {
   data: [
-    { id: 'todo', title: 'To Do', items: [] },
-    { id: 'in-progress', title: 'In Progress', items: [] },
-    { id: 'done', title: 'Done', items: [] }
+    { id: 'todo', title: 'To Do', issues: [] },
+    { id: 'in-progress', title: 'In Progress', issues: [] },
+    { id: 'done', title: 'Done', issues: [] }
   ],
 };
 

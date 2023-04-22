@@ -1,13 +1,16 @@
-import React from 'react';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
-import { Col, Container, Row, Button, Form, Alert } from 'react-bootstrap';
-import { clearRepoUrl, setRepoUrl } from './redux/slices/repoUrlSlice';
+import React, { useCallback } from 'react';
+import { DragDropContext, DropResult } from 'react-beautiful-dnd';
+import { Container, Row } from 'react-bootstrap';
+import { clearRepoUrl } from './redux/slices/repoUrlSlice';
 import { selectColumns } from './redux/slices/columnsSlice';
+import { setColumns } from './redux/slices/columnsSlice';
 import { fetchIssues } from './redux/slices/IssuesSlice';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
 import { getIssuesApiLink } from './helpers/getIssuesApiLink';
 import { filterIssues } from './helpers/filterIssues';
-import { Column } from './types/Column';
+import { Column as ColumnType } from './types/Column';
+import { Column } from './components/Column/Column';
+import { Form } from './components/Form/Form';
 import { ToastContainer } from 'react-toastify';
 import { toast } from 'react-toastify';
 
@@ -16,20 +19,22 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export const App: React.FC = () => {
   const dispatch = useAppDispatch();
-  const columns: Column[] = useAppSelector(selectColumns);
-  const repoUrl = useAppSelector(state => state.repoUrl);
+  const columns: ColumnType[] = useAppSelector(selectColumns);
+  const { repoUrl } = useAppSelector(state => state);
+
+  const updateColumns = useCallback((newColumns: ColumnType[]) => {
+    dispatch(setColumns(newColumns));
+    localStorage.setItem(repoUrl, JSON.stringify(newColumns));
+  }, [dispatch, repoUrl]);
 
   const handleLoadIssues = async () => {
     const normalizedRepoUrl = getIssuesApiLink(repoUrl);
 
     const storedState = localStorage.getItem(repoUrl);
     if (storedState) {
-      const columnsFromStorage = JSON.parse(storedState);
+      const columnsFromStorage: ColumnType[] = JSON.parse(storedState);
 
-      dispatch({
-        type: 'columns/setColumns',
-        payload: columnsFromStorage,
-      });
+      updateColumns(columnsFromStorage);
       return;
     }
 
@@ -42,30 +47,21 @@ export const App: React.FC = () => {
       }
 
       const { todoIssues, inProgressIssues, doneIssues } = filterIssues(issues);
-      dispatch({
-        type: 'columns/setColumns',
-        payload: [
-          { id: 'todo', title: 'To Do', items: todoIssues },
-          { id: 'in-progress', title: 'In Progress', items: inProgressIssues },
-          { id: 'done', title: 'Done', items: doneIssues },
-        ]
-      });
 
-      localStorage.setItem(repoUrl, JSON.stringify([
-        { id: 'todo', title: 'To Do', items: todoIssues },
-        { id: 'in-progress', title: 'In Progress', items: inProgressIssues },
-        { id: 'done', title: 'Done', items: doneIssues },
-      ]));
+      updateColumns([
+        { id: 'todo', title: 'To Do', issues: todoIssues },
+        { id: 'in-progress', title: 'In Progress', issues: inProgressIssues },
+        { id: 'done', title: 'Done', issues: doneIssues },
+      ]);
     } catch (error) {
       dispatch(clearRepoUrl());
-      dispatch({
-        type: 'columns/setColumns',
-        payload: [
-          { id: 'todo', title: 'To Do', items: [] },
-          { id: 'in-progress', title: 'In Progress', items: [] },
-          { id: 'done', title: 'Done', items: [] }
-        ],
-      });
+
+      dispatch(setColumns([
+        { id: 'todo', title: 'To Do', issues: [] },
+        { id: 'in-progress', title: 'In Progress', issues: [] },
+        { id: 'done', title: 'Done', issues: [] }
+      ]));
+
       toast.error('Error loading issues. Please check your repository URL.')
     }
   };
@@ -74,16 +70,16 @@ export const App: React.FC = () => {
     if (!result.destination) return;
 
     const newColumns = columns.map(column => {
-      return { ...column, items: [...column.items] };
+      return { ...column, issues: [...column.issues] };
     });
     const { source, destination } = result;
     console.log(destination.droppableId);
     const sourceColumn = newColumns.find((column) => column.id === source.droppableId);
     const destinationColumn = newColumns.find((column) => column.id === destination.droppableId);
-    const item = sourceColumn && sourceColumn.items.find((item) => item.id === +result.draggableId);
+    const item = sourceColumn && sourceColumn.issues.find((item) => item.id === +result.draggableId);
     if (!item) return;
-    sourceColumn.items.splice(source.index, 1);
-    destinationColumn && destinationColumn.items.splice(destination.index, 0, item);
+    sourceColumn.issues.splice(source.index, 1);
+    destinationColumn && destinationColumn.issues.splice(destination.index, 0, item);
     dispatch({ type: 'columns/setColumns', payload: newColumns });
 
     localStorage.setItem(repoUrl, JSON.stringify(newColumns));
@@ -100,25 +96,7 @@ export const App: React.FC = () => {
       />
 
       <Container>
-        <Form.Group as={Row} className="justify-content-between">
-          <Col sm={8} md={8} lg={10}>
-            <Form.Control
-              type="text"
-              placeholder="Enter repo URL"
-              value={repoUrl}
-              className='input'
-              onChange={(e) => dispatch(setRepoUrl(e.target.value))}
-            />
-          </Col>
-          <Col xs={6} sm={4} md={4} lg={2}>
-            <Button
-              variant="secondary"
-              onClick={handleLoadIssues}
-              className="w-100 button">
-              Load Issues
-            </Button>
-          </Col>
-        </Form.Group>
+        <Form handleLoadIssues={handleLoadIssues} />
 
         <DragDropContext
           onDragEnd={handleDragEnd}
@@ -126,37 +104,7 @@ export const App: React.FC = () => {
           <Row className="mt-3">
             {
               columns.map(column => (
-                <Droppable droppableId={column.id} key={column.id}>
-                  {(provided) => (
-                    <Col {...provided.droppableProps} ref={provided.innerRef}>
-                      <h1 className="text-center">{column.title}</h1>
-                      <div className="column mx-3">
-                        {column.items.map((item, index) => (
-                          <Draggable draggableId={item.id.toString()} index={index} key={item.id}>
-                            {(provided) => (
-                              <div
-                                draggable={true}
-                                className="issue my-3 align-left"
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                              >
-                                <div className="title">{item.title}</div>
-                                <div>
-                                  {`#${item.number} opened ${Math.floor((new Date().getTime() - new Date(item.created_at).getTime()) / (1000 * 60 * 60 * 24))} days ago`}
-                                </div>
-                                <div>
-                                  {`${item.user.login} | Comments: ${item.comments}`}
-                                </div>
-                              </div>
-                            )}
-                          </Draggable>
-                        ))}
-                        {provided.placeholder}
-                      </div>
-                    </Col>
-                  )}
-                </Droppable>
+                <Column column={column} key={column.id} />
               ))
             }
           </Row>
