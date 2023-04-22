@@ -1,30 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { Col, Container, Row, Button, Form, Alert } from 'react-bootstrap';
 import { clearRepoUrl, setRepoUrl } from './redux/slices/repoUrlSlice';
-import { useAppDispatch, useAppSelector } from './redux/hooks';
-import { fetchIssues } from './redux/slices/IssuesSlice';
 import { selectColumns } from './redux/slices/columnsSlice';
+import { fetchIssues } from './redux/slices/IssuesSlice';
+import { useAppDispatch, useAppSelector } from './redux/hooks';
 import { getIssuesApiLink } from './helpers/getIssuesApiLink';
-import { Issue } from './types/Issue';
+import { filterIssues } from './helpers/filterIssues';
 import { Column } from './types/Column';
+import { ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 import './App.scss';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const App: React.FC = () => {
-  const [error, setError] = useState('');
-
   const dispatch = useAppDispatch();
   const columns: Column[] = useAppSelector(selectColumns);
   const repoUrl = useAppSelector(state => state.repoUrl);
-
-  const filterIssues = (issues: Issue[]) => {
-    const todoIssues = issues.filter((issue) => issue.state === 'open');
-    const inProgressIssues = issues.filter((issue) => issue.state === 'open' && issue.assignee);
-    const doneIssues = issues.filter((issue) => issue.state === 'closed');
-
-    return { todoIssues, inProgressIssues, doneIssues };
-  };
 
   const handleLoadIssues = async () => {
     const normalizedRepoUrl = getIssuesApiLink(repoUrl);
@@ -48,7 +41,6 @@ export const App: React.FC = () => {
         throw new Error();
       }
 
-      setError('');
       const { todoIssues, inProgressIssues, doneIssues } = filterIssues(issues);
       dispatch({
         type: 'columns/setColumns',
@@ -66,7 +58,15 @@ export const App: React.FC = () => {
       ]));
     } catch (error) {
       dispatch(clearRepoUrl());
-      setError('Error loading issues. Please check your repository URL.');
+      dispatch({
+        type: 'columns/setColumns',
+        payload: [
+          { id: 'todo', title: 'To Do', items: [] },
+          { id: 'in-progress', title: 'In Progress', items: [] },
+          { id: 'done', title: 'Done', items: [] }
+        ],
+      });
+      toast.error('Error loading issues. Please check your repository URL.')
     }
   };
 
@@ -91,6 +91,14 @@ export const App: React.FC = () => {
 
   return (
     <div className="App">
+      <ToastContainer
+        theme="light"
+        position="bottom-right"
+        autoClose={3000}
+        closeOnClick
+        pauseOnHover={false}
+      />
+
       <Container>
         <Form.Group as={Row} className="justify-content-between">
           <Col sm={8} md={8} lg={10}>
@@ -111,8 +119,6 @@ export const App: React.FC = () => {
             </Button>
           </Col>
         </Form.Group>
-
-        {error && <Alert variant="danger">{error}</Alert>}
 
         <DragDropContext
           onDragEnd={handleDragEnd}
