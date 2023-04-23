@@ -17,7 +17,7 @@ export const Column: React.FC<Props> = memo(({ column }) => {
         <Col
           {...provided.droppableProps}
           ref={provided.innerRef}
-          className="col-sm-6 col-md-6 col-lg-4"
+          className="col-12 col-md-6 col-lg-4"
         >
           <h1 className="text-center">{column.title}</h1>
 
