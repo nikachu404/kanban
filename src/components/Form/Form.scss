@@ -1,0 +1,13 @@
+.form {
+  &__input {
+    font-size: 1.3rem;
+  }
+
+  &__button {
+    font-size: 1.3rem;
+
+    @media (max-width: 576px) {
+      margin-top: 10px;
+    }
+  }
+}
