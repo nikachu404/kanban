@@ -1,3 +1,4 @@
+/* eslint-disable cypress/unsafe-to-chain-command */
 describe('App', () => {
   beforeEach(() => {
     cy.visit('http://127.0.0.1:5173/');
@@ -5,14 +6,14 @@ describe('App', () => {
 
   it('shows an error when loading issues from an invalid repository URL', () => {
     const repoUrl = 'https://github.com/my-username/invalid-repo';
-    cy.get('.input').type(repoUrl);
-    cy.get('.button').click().wait(1000);
+    cy.get('.form__input').type(repoUrl);
+    cy.get('.form__button').click();
     cy.get('.Toastify__toast').should('be.visible');
   });
 
   it('should drag issues between columns', () => {
-    cy.get('.input').type('https://github.com/facebook/react');
-    cy.get('.button').click();
+    cy.get('.form__input').type('https://github.com/facebook/react');
+    cy.get('.form__button').click();
 
     cy.get('.column').eq(0).as('todo');
     cy.get('.column').eq(1).as('in-progress');
@@ -34,7 +35,6 @@ describe('App', () => {
           .focus()
           .trigger('keydown', { keyCode: 32 })
           .trigger('keydown', { keyCode: 39, force: true })
-          .wait(1000)
           .trigger('keydown', { keyCode: 32, force: true });
 
         cy.get('@todo').find('.issue').should('have.length', initialTodoLength - 1);

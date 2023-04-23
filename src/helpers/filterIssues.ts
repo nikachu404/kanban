@@ -1,4 +1,4 @@
-import { Issue } from "../types/Issue";
+import { Issue } from '../types/Issue';
 
 export const filterIssues = (issues: Issue[]) => {
   const todoIssues = issues.filter((issue) => issue.state === 'open');

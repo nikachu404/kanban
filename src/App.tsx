@@ -74,7 +74,7 @@ export const App: React.FC = () => {
 
       dispatch(setIsBreadcrumbsVisible(false));
 
-      toast.error('Error loading issues. Please check your repository URL.')
+      toast.error('Error loading issues. Please check your repository URL.');
     }
   };
 

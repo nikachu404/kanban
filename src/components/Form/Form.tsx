@@ -1,9 +1,7 @@
 import React, { memo } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { Col, Row, Button, Form as BootstrapForm } from 'react-bootstrap';
-import { Column as ColumnType } from '../../types/Column';
 import { setRepoUrl } from '../../redux/slices/repoUrlSlice';
-import { selectColumns } from '../../redux/slices/columnsSlice';
 
 import './Form.scss';
 
@@ -13,7 +11,6 @@ interface Props {
 
 export const Form: React.FC<Props> = memo(({ handleLoadIssues }) => {
   const dispatch = useAppDispatch();
-  const columns: ColumnType[] = useAppSelector(selectColumns);
   const repoUrl = useAppSelector(state => state.repoUrl);
 
   return (
@@ -37,5 +34,5 @@ export const Form: React.FC<Props> = memo(({ handleLoadIssues }) => {
         </Button>
       </Col>
     </BootstrapForm.Group>
-  )
-})
+  );
+});

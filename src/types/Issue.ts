@@ -11,5 +11,4 @@ export interface Issue {
 
 interface User {
   login: string;
-  url?: string;
 }

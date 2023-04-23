@@ -1,41 +1,107 @@
+// {
+//   "env": {
+//     "browser": true,
+//     "es2021": true
+//   },
+//   "extends": [
+//     "eslint:recommended",
+//     "plugin:react/recommended",
+//     "plugin:@typescript-eslint/recommended",
+//     "plugin:cypress/recommended"
+//   ],
+//   "overrides": [],
+//   "parser": "@typescript-eslint/parser",
+//   "parserOptions": {
+//     "ecmaVersion": "latest",
+//     "sourceType": "module"
+//   },
+//   "plugins": [
+//     "react",
+//     "@typescript-eslint"
+//   ],
+//   "rules": {
+//     "indent": [
+//       "error",
+//       2
+//     ],
+//     "linebreak-style": [
+//       "error",
+//       "unix"
+//     ],
+//     "quotes": [
+//       "error",
+//       "single"
+//     ],
+//     "semi": [
+//       "error",
+//       "always"
+//     ],
+//     "no-multiple-empty-lines": [
+//       "error",
+//       {
+//         "max": 1,
+//         "maxEOF": 1
+//       }
+//     ],
+//     "react/prop-types": [
+//       "error",
+//       {
+//         "ignore": [
+//           "issue",
+//           "index"
+//         ]
+//       }
+//     ],
+//     "react/display-name": "off"
+//   }
+// }
+
 {
-    "env": {
-        "browser": true,
-        "es2021": true
-    },
-    "extends": [
-        "eslint:recommended",
-        "plugin:react/recommended",
-        "plugin:@typescript-eslint/recommended",
-        "plugin:cypress/recommended"
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:cypress/recommended"
+  ],
+  "overrides": [],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": [
+    "react",
+    "@typescript-eslint"
+  ],
+  "rules": {
+    "indent": [
+      "error",
+      2
     ],
-    "overrides": [
+    "linebreak-style": [
+      "error",
+      "unix"
     ],
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-        "ecmaVersion": "latest",
-        "sourceType": "module"
-    },
-    "plugins": [
-        "react",
-        "@typescript-eslint"
+    "quotes": [
+      "error",
+      "single"
     ],
-    "rules": {
-        "indent": [
-            "error",
-            2
-        ],
-        "linebreak-style": [
-            "error",
-            "unix"
-        ],
-        "quotes": [
-            "error",
-            "single"
-        ],
-        "semi": [
-            "error",
-            "always"
-        ]
-    }
+    "semi": [
+      "error",
+      "always"
+    ],
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "max": 1,
+        "maxEOF": 1
+      }
+    ],
+    "react/display-name": "off",
+    "react/prop-types": "off"
+  }
 }

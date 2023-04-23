@@ -1,13 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const repoUrlSlice = createSlice({
-  name: 'repo',
+  name: 'repoUrl',
   initialState: '',
   reducers: {
-    setRepoUrl: (state, action) => {
+    setRepoUrl: (_state, action) => {
       return action.payload;
     },
-    clearRepoUrl: (state) => {
+    clearRepoUrl: () => {
       return '';
     },
   },

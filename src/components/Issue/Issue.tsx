@@ -31,5 +31,5 @@ export const Issue: React.FC<Props> = memo(({ issue, index }) => {
         </div>
       )}
     </Draggable>
-  )
-})
+  );
+});

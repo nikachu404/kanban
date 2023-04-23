@@ -25,5 +25,5 @@ export const Column: React.FC<Props> = memo(({ column }) => {
         </Col>
       )}
     </Droppable>
-  )
-})
+  );
+});
