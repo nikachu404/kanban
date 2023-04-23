@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import { getRepoApiLink } from '../../helpers/getRepoApiLink';
 import axios from 'axios';
 
+import { capitalizeFirstLetter } from '../../helpers/capitalizeFirstLetter';
+import { formatStars } from '../../helpers/formatStars';
+
 import star from '../../assets/images/star.svg';
 import './Breadcrumbs.scss';
-import { capitalizeFirstLetter } from '../../helpers/capitalizeFirstLetter';
 
 interface Props {
   repoUrl: string;
@@ -37,7 +39,7 @@ export const Breadcrumbs: React.FC<Props> = ({ repoUrl }) => {
       <Link to={`https://github.com/${owner}/${repoName}`} target="_blank">{capitalizeFirstLetter(repoName)}</Link> &gt;{' '}
       <span>
         <img src={star} alt="star" className="breadcrumbs__icon me-1" />
-        {stars} stars
+        {formatStars(Number(stars))} stars
       </span>
     </div>
   );
