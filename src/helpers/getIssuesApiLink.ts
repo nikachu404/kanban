@@ -1,4 +1,3 @@
-
 export const getIssuesApiLink = (githubLink: string) => {
   const parts = githubLink.split('/');
   const username = parts[3];
