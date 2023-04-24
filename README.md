@@ -45,7 +45,7 @@ Example links for testing:
  
  ![](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNDdmOGI1MGUzNzkwMDBlYTNiZWQ5Nzk3ZGQxY2NkZjg2OWFhNzA5NiZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/VSjdIsuobGaVqdr4jf/giphy.gif)
  
-<h2 align="center">📌Instructions how to run application locally:📌</h2>
+<h2 align="center">📌Instructions how to run application locally📌</h2>
 
 1. Clone the repository to your local machine.
 2. Open terminal in the project.
@@ -59,7 +59,7 @@ npm run dev
 ```
 5. Open application in your browser `http://127.0.0.1:5173/kanban/`
 
-<h2 align="center">📌Instructions how to run Cypress tests:📌</h2>
+<h2 align="center">📌Instructions how to run Cypress tests📌</h2>
 
 1. Make sure you run the application locally
 2. Add command to terminal:
