@@ -37,7 +37,7 @@ export const Breadcrumbs: React.FC<Props> = ({ repoUrl }) => {
       <Link to={`https://github.com/${owner}`} target="_blank">{capitalizeFirstLetter(owner)}</Link> &gt;{' '}
       <Link to={`https://github.com/${owner}/${repoName}`} target="_blank">{capitalizeFirstLetter(repoName)}</Link> &gt;{' '}
       <span>
-        {/* <img src="/kanban/src/assets/images/star.svg" alt="star" className="breadcrumbs__icon me-1" /> */}
+        <img src="/assets/images/star.svg" alt="star" className="breadcrumbs__icon me-1" />
         {formatStars(Number(stars))} stars
       </span>
     </div>
