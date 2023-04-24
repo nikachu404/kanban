@@ -8,7 +8,7 @@ const initialState: isBreadcrumbsVisibleState = {
   isBreadcrumbsVisible: false,
 };
 
-const isBreadcrumbsVisible = createSlice({
+const isBreadcrumbsVisibleSlice = createSlice({
   name: 'isBreadcrumbsVisible',
   initialState,
   reducers: {
@@ -18,6 +18,6 @@ const isBreadcrumbsVisible = createSlice({
   },
 });
 
-export const { setIsBreadcrumbsVisible } = isBreadcrumbsVisible.actions;
+export const { setIsBreadcrumbsVisible } = isBreadcrumbsVisibleSlice.actions;
 
-export const isBreadcrumbsVisibleReducer = isBreadcrumbsVisible.reducer;
+export const isBreadcrumbsVisibleReducer = isBreadcrumbsVisibleSlice.reducer;

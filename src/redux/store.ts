@@ -11,19 +11,21 @@ import {
 } from 'redux-persist';
 import { columnsReducer } from './slices/columnsSlice';
 import { repoUrlSliceReducer } from './slices/repoUrlSlice';
-import { isBreadcrumbsVisibleReducer } from './slices/breadcrumbsSlice';
+import { isBreadcrumbsVisibleReducer } from './slices/isBreadcrumbsVisibleSlice';
+import { breadcrumbsInfoReducer } from './slices/breadcrumbsInfoSlice';
 import storage from 'redux-persist/lib/storage';
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['columns', 'repoUrl', 'isBreadcrumbsVisible'],
+  whitelist: ['columns', 'repoUrl', 'isBreadcrumbsVisible', 'breadcrumbsInfo'],
 };
 
 const rootReducer = combineReducers({
   columns: columnsReducer,
   repoUrl: repoUrlSliceReducer,
   isBreadcrumbsVisible: isBreadcrumbsVisibleReducer,
+  breadcrumbsInfo: breadcrumbsInfoReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

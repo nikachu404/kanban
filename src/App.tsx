@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 
 import { Breadcrumbs } from './components/Breadcrumbs/Breadcrumbs';
 import { Column } from './components/Column/Column';
@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 
 import { useAppDispatch, useAppSelector } from './redux/hooks';
-import { setIsBreadcrumbsVisible } from './redux/slices/breadcrumbsSlice';
+import { setIsBreadcrumbsVisible } from './redux/slices/isBreadcrumbsVisibleSlice';
 import { clearRepoUrl } from './redux/slices/repoUrlSlice';
 import { selectColumns } from './redux/slices/columnsSlice';
 import { setColumns } from './redux/slices/columnsSlice';
@@ -23,17 +23,15 @@ import { Column as ColumnType } from './types/Column';
 
 import './App.scss';
 import 'react-toastify/dist/ReactToastify.css';
+import { setOwner, setRepoName, setStars } from './redux/slices/breadcrumbsInfoSlice';
 
 export const App: React.FC = () => {
   const dispatch = useAppDispatch();
   const columns: ColumnType[] = useAppSelector(selectColumns);
   const { repoUrl } = useAppSelector(state => state);
   const { isBreadcrumbsVisible } = useAppSelector(state => state.isBreadcrumbsVisible);
-
-  const [owner, setOwner] = useState('');
-  const [repoName, setRepoName] = useState('');
-  const [stars, setStars] = useState(0);
-
+  const { owner, repoName, stars } = useAppSelector(state => state.breadcrumbsInfo);
+  
   const updateColumns = useCallback((newColumns: ColumnType[]) => {
     dispatch(setColumns(newColumns));
     localStorage.setItem(repoUrl, JSON.stringify(newColumns));
@@ -49,9 +47,9 @@ export const App: React.FC = () => {
 
       const repoResponse = await axios.get(normalizedRepoApiUrl);
 
-      setOwner(repoResponse.data.owner.login);
-      setRepoName(repoResponse.data.name);
-      setStars(repoResponse.data.stargazers_count);
+      dispatch(setOwner(repoResponse.data.owner.login));
+      dispatch(setRepoName(repoResponse.data.name));
+      dispatch(setStars(repoResponse.data.stargazers_count));
 
       updateColumns(columnsFromStorage);
       dispatch(setIsBreadcrumbsVisible(true));
@@ -70,9 +68,9 @@ export const App: React.FC = () => {
 
       const repoResponse = await axios.get(normalizedRepoApiUrl);
 
-      setOwner(repoResponse.data.owner.login);
-      setRepoName(repoResponse.data.name);
-      setStars(repoResponse.data.stargazers_count);
+      dispatch(setOwner(repoResponse.data.owner.login));
+      dispatch(setRepoName(repoResponse.data.name));
+      dispatch(setStars(repoResponse.data.stargazers_count));
 
       updateColumns([
         { id: 'todo', title: 'To Do', issues: todoIssues },
