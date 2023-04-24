@@ -5,6 +5,15 @@
  <h2 align="center">📋About📋</h2>
 Responsive kanban website that uploads draggable repo issues. Issue manipulations are stored in localStorage and Redux Persist. There are also two Cypress tests that check whether a notification occurs when loading issues fails and drag-and-drop implementation.
 
+
+
+Example links for testing:
+- `https://github.com/facebook/react`
+- `https://github.com/facebook/react-native`
+- `https://github.com/facebook/docusaurus`
+
+
+
 <h2 align="center">🔮Technologies used🔮</h2>
 
  - <img width="40px" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" />React, React Router DOM
