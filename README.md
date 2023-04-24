@@ -65,3 +65,4 @@ npm run dev
 ```bash 
 npm run cypress
 ```
+3. Follow instructions that appear
