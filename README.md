@@ -1,6 +1,7 @@
 <h1 align="center">📋Kanban📋</h1>
 
  - [✨DEMO✨](https://nikachu404.github.io/kanban/)
+ - [✏️TASK✏️](https://github.com/incodellc/github-kanban-test-task)
 
  <h2 align="center">📋About📋</h2>
 Responsive kanban website that uploads draggable repo issues. Issue manipulations are stored in localStorage and Redux Persist. There are also two Cypress tests that check whether a notification occurs when loading issues fails and drag-and-drop implementation.
