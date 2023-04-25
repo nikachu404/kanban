@@ -1,7 +1,9 @@
 import React, { memo } from 'react';
-import { Issue as IssueType } from '../../types/Issue';
-import { getIssueCreationTime } from '../../helpers/getIssueCreationTime';
 import { Draggable } from 'react-beautiful-dnd';
+
+import { Issue as IssueType } from '../../types';
+
+import { getIssueCreationTime } from '../../helpers';
 
 import './Issue.scss';
 
@@ -26,7 +28,7 @@ export const Issue: React.FC<Props> = memo(({ issue, index }) => {
             {getIssueCreationTime(issue)}
           </div>
           <div>
-            {`${issue.user.login} | Comments: ${issue.comments}`}
+            {issue.user.login} | Comments: {issue.comments}
           </div>
         </div>
       )}
