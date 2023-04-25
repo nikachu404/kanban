@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { Col, Row, Button, Form as BootstrapForm } from 'react-bootstrap';
 
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { setRepoUrl } from '../../redux/slices';
+import { selectRepoUrl, setRepoUrl } from '../../redux/slices';
 
 import './Form.scss';
 
@@ -12,7 +12,7 @@ interface Props {
 
 export const Form: React.FC<Props> = memo(({ handleLoadIssues }) => {
   const dispatch = useAppDispatch();
-  const repoUrl = useAppSelector(state => state.repoUrl);
+  const repoUrl = useAppSelector(selectRepoUrl);
 
   return (
     <BootstrapForm.Group as={Row} className="justify-content-between form">
