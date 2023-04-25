@@ -111,9 +111,9 @@ export const App: React.FC = () => {
 
     const { source, destination } = result;
 
-    const [sourceColumn, destinationColumn] =
-      newColumns.filter((column) => [source.droppableId, destination.droppableId].includes(column.id));
-      
+    const sourceColumn = newColumns.find((column) => column.id === source.droppableId);
+    const destinationColumn = newColumns.find((column) => column.id === destination.droppableId);
+
     const item = sourceColumn && sourceColumn.issues.find((item) => item.id === +result.draggableId);
 
     if (!item) return;
