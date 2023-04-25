@@ -33,74 +33,76 @@ export const App: React.FC = () => {
     localStorage.setItem(repoUrl, JSON.stringify(newColumns));
   }, [dispatch, repoUrl]);
 
+  const handleLoadIssuesSuccess = (columnsFromStorage: ColumnType[]) => {
+    updateColumns(columnsFromStorage);
+    dispatch(setIsBreadcrumbsVisible(true));
+  };
+  
+  const handleLoadIssuesError = () => {
+    dispatch(clearRepoUrl());
+  
+    dispatch(setColumns([
+      { id: 'todo', title: 'To Do', issues: [] },
+      { id: 'in-progress', title: 'In Progress', issues: [] },
+      { id: 'done', title: 'Done', issues: [] }
+    ]));
+  
+    dispatch(setIsBreadcrumbsVisible(false));
+  
+    toast.error('Error loading issues. Please check your repository URL.');
+  };
+  
   const handleLoadIssues = async () => {
     const normalizedIssueApiUrl = getIssuesApiLink(repoUrl);
     const normalizedRepoApiUrl = getRepoApiLink(repoUrl);
-
+  
     const storedState = localStorage.getItem(repoUrl);
     if (storedState) {
       try {
         const columnsFromStorage: ColumnType[] = JSON.parse(storedState);
-
+  
         const repoResponse = await axios.get(normalizedRepoApiUrl);
-
-        dispatch(setOwner(repoResponse.data.owner.login));
-        dispatch(setRepoName(repoResponse.data.name));
-        dispatch(setStars(repoResponse.data.stargazers_count));
-
-        updateColumns(columnsFromStorage);
-        dispatch(setIsBreadcrumbsVisible(true));
+  
+        const { owner, name, stargazers_count } = repoResponse.data ?? {};
+  
+        dispatch(setOwner(owner?.login));
+        dispatch(setRepoName(name));
+        dispatch(setStars(stargazers_count));
+  
+        handleLoadIssuesSuccess(columnsFromStorage);
         return;
       } catch (error) {
-        dispatch(clearRepoUrl());
-
-        dispatch(setColumns([
-          { id: 'todo', title: 'To Do', issues: [] },
-          { id: 'in-progress', title: 'In Progress', issues: [] },
-          { id: 'done', title: 'Done', issues: [] }
-        ]));
-
-        dispatch(setIsBreadcrumbsVisible(false));
-
-        toast.error('Error loading issues. Please check your repository URL.');
+        handleLoadIssuesError();
       }
     }
-
+  
     try {
       const issuesResponse = await axios.get(normalizedIssueApiUrl);
       const issues = issuesResponse.data;
-
+  
       if (!Array.isArray(issues)) {
         throw new Error();
       }
-
+  
       const { todoIssues, inProgressIssues, doneIssues } = filterIssues(issues);
-
+  
       const repoResponse = await axios.get(normalizedRepoApiUrl);
-
-      dispatch(setOwner(repoResponse.data.owner.login));
-      dispatch(setRepoName(repoResponse.data.name));
-      dispatch(setStars(repoResponse.data.stargazers_count));
-
+  
+      const { owner, name, stargazers_count } = repoResponse.data ?? {};
+  
+      dispatch(setOwner(owner?.login));
+      dispatch(setRepoName(name));
+      dispatch(setStars(stargazers_count));
+  
       updateColumns([
         { id: 'todo', title: 'To Do', issues: todoIssues },
         { id: 'in-progress', title: 'In Progress', issues: inProgressIssues },
         { id: 'done', title: 'Done', issues: doneIssues },
       ]);
-
+  
       dispatch(setIsBreadcrumbsVisible(true));
     } catch (error) {
-      dispatch(clearRepoUrl());
-
-      dispatch(setColumns([
-        { id: 'todo', title: 'To Do', issues: [] },
-        { id: 'in-progress', title: 'In Progress', issues: [] },
-        { id: 'done', title: 'Done', issues: [] }
-      ]));
-
-      dispatch(setIsBreadcrumbsVisible(false));
-
-      toast.error('Error loading issues. Please check your repository URL.');
+      handleLoadIssuesError();
     }
   };
 
