@@ -6,5 +6,4 @@ export const formatStars = (stars: number) => {
   const formattedStars = Math.floor(stars / 100) / 10;
   
   return formattedStars.toString() + 'K';
-
 };
