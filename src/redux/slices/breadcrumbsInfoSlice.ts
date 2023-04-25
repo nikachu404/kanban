@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from '../store';
 
 interface breadcrumbsInfoState {
   owner: string;
@@ -27,6 +28,8 @@ const breadcrumbsInfoSlice = createSlice({
     },
   },
 });
+
+export const selectBreadcrumbsInfo= (state: RootState) => state.breadcrumbsInfo;
 
 export const { setOwner, setRepoName, setStars } = breadcrumbsInfoSlice.actions;
 

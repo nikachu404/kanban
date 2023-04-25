@@ -1,7 +1,6 @@
+import { getRepoUrl } from './getRepoUrl';
+
 export const getRepoApiLink = (githubLink: string) => {
-  const parts = githubLink.split('/');
-  const username = parts[3];
-  const repository = parts[4];
-  const issuesLink = `https://api.github.com/repos/${username}/${repository}`;
-  return issuesLink;
+  const [username, repository] = getRepoUrl(githubLink);
+  return `https://api.github.com/repos/${username}/${repository}`;
 };

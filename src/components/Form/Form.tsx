@@ -1,7 +1,8 @@
 import React, { memo } from 'react';
-import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { Col, Row, Button, Form as BootstrapForm } from 'react-bootstrap';
-import { setRepoUrl } from '../../redux/slices/repoUrlSlice';
+
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { setRepoUrl } from '../../redux/slices';
 
 import './Form.scss';
 

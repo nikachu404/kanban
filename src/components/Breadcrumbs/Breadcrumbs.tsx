@@ -1,8 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { capitalizeFirstLetter } from '../../helpers/capitalizeFirstLetter';
-import { formatStars } from '../../helpers/formatStars';
+import { capitalizeFirstLetter, formatStars } from '../../helpers';
 
 import './Breadcrumbs.scss';
 

@@ -1,9 +1,20 @@
 import { Issue } from '../types/Issue';
 
 export const filterIssues = (issues: Issue[]) => {
-  const todoIssues = issues.filter((issue) => issue.state === 'open');
-  const inProgressIssues = issues.filter((issue) => issue.state === 'open' && issue.assignee);
-  const doneIssues = issues.filter((issue) => issue.state === 'closed');
-
-  return { todoIssues, inProgressIssues, doneIssues };
+  return issues.reduce(
+    (acc: { todoIssues: Issue[], inProgressIssues: Issue[], doneIssues: Issue[] }, issue) => {
+      if (issue.state === 'open') {
+        if (issue.assignee === null) {
+          acc.todoIssues.push(issue);
+        } else {
+          acc.inProgressIssues.push(issue);
+        }
+      } else {
+        acc.doneIssues.push(issue);
+      }
+      return acc;
+    },
+    { todoIssues: [], inProgressIssues: [], doneIssues: [] }
+  );
 };
+

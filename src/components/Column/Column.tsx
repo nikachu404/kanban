@@ -1,8 +1,9 @@
 import React, { memo } from 'react';
 import { Droppable } from 'react-beautiful-dnd';
-import { Issue } from '../Issue/Issue';
-import { Column as ColumnType } from '../../types/Column';
 import { Col } from 'react-bootstrap';
+
+import { Issue } from '../index';
+import { Column as ColumnType } from '../../types';
 
 import './Column.scss';
 

@@ -1,22 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-interface isBreadcrumbsVisibleState {
-  isBreadcrumbsVisible: boolean;
-}
-
-const initialState: isBreadcrumbsVisibleState = {
-  isBreadcrumbsVisible: false,
-};
+import { RootState } from '../store';
 
 const isBreadcrumbsVisibleSlice = createSlice({
   name: 'isBreadcrumbsVisible',
-  initialState,
+  initialState: false,
   reducers: {
-    setIsBreadcrumbsVisible: (state, action: PayloadAction<boolean>) => {
-      state.isBreadcrumbsVisible = action.payload;
-    },
+    setIsBreadcrumbsVisible: (_state, action: PayloadAction<boolean>) => action.payload,
   },
 });
+
+export const selectIsBreadcrumbsVisible = (state: RootState) => state.isBreadcrumbsVisible;
 
 export const { setIsBreadcrumbsVisible } = isBreadcrumbsVisibleSlice.actions;
 
